@@ -1,5 +1,5 @@
 {
-	"name": "callassistance-aiagent",
+	"name": "device_atlas-test",
 	"version": "1.0.0",
 	"description": "For handle the incoming inbound call",
 	"main": "server.ts",
