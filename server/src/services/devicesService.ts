@@ -1,3 +1,4 @@
+import DeviceModel from "../models/Device.model";
 
 class DeviceServices {
 
@@ -11,11 +12,11 @@ class DeviceServices {
     }
 
     public async getDevice() {
-
+        return await DeviceModel.findAll();
     }
 
-    public async saveDeviceDetails() {
-
+    public async saveDeviceDetails(param: any) {
+        return await DeviceModel.create(param)
     }
 }
 

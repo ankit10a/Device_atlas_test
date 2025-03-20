@@ -1,7 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db_connection";
 
-interface DeviceAttributes {
+interface DeviceModelAttributes {
     id?: number;
     // userAgent: string;
     primaryHardwareType: string;
@@ -15,7 +15,7 @@ interface DeviceAttributes {
     updatedAt?: Date;
 }
 
-class Device extends Model<DeviceAttributes> implements DeviceAttributes {
+class DeviceModel extends Model<DeviceModelAttributes> implements DeviceModelAttributes {
     public id!: number;
     // public userAgent!: string;
     public primaryHardwareType!: string;
@@ -29,7 +29,7 @@ class Device extends Model<DeviceAttributes> implements DeviceAttributes {
     public readonly updatedAt!: Date;
 }
 
-Device.init(
+DeviceModel.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -71,10 +71,10 @@ Device.init(
     },
     {
         sequelize,
-        modelName: "Device",
+        modelName: "DeviceModel",
         tableName: "devices",
         timestamps: true,
     }
 );
 
-export default Device;
+export default DeviceModel;
