@@ -15,11 +15,15 @@
 	"dependencies": {
 		"callassistance-aiagent": "file:",
 		"dotenv": "^16.4.7",
-		"express": "^4.21.2"
+		"express": "^4.21.2",
+		"mysql2": "^3.14.0",
+		"sequelize": "^6.37.6",
+		"sequelize-typescript": "^2.1.6"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.21",
 		"@types/node": "^20.12.7",
+		"@types/sequelize": "^4.28.20",
 		"nodemon": "^3.1.9",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5"
