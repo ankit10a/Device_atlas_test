@@ -1,5 +1,6 @@
 import { Sequelize, ModelStatic } from 'sequelize';
 import sequelize from '../config/db_connection';
+import Device from './device.model';
 
 // Define model interface with initialization capability
 interface InitializableModel {
@@ -9,7 +10,7 @@ interface InitializableModel {
 
 // Strongly typed models registry
 const models: Record<string, ModelStatic<any> & InitializableModel> = {
-    // OrderSummary,
+    Device
 };
 
 export type Models = typeof models;
