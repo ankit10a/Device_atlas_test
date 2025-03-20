@@ -1,6 +1,6 @@
 import { Sequelize, ModelStatic } from 'sequelize';
 import sequelize from '../config/db_connection';
-import Device from './device.model';
+import Device from './Device.model';
 
 // Define model interface with initialization capability
 interface InitializableModel {

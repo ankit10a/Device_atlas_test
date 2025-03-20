@@ -3,7 +3,7 @@ import sequelize from "../config/db_connection";
 
 interface DeviceAttributes {
     id?: number;
-    userAgent: string;
+    // userAgent: string;
     primaryHardwareType: string;
     osVersion: string;
     vendor: string;
@@ -17,7 +17,7 @@ interface DeviceAttributes {
 
 class Device extends Model<DeviceAttributes> implements DeviceAttributes {
     public id!: number;
-    public userAgent!: string;
+    // public userAgent!: string;
     public primaryHardwareType!: string;
     public osVersion!: string;
     public vendor!: string;
@@ -36,10 +36,10 @@ Device.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        userAgent: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
+        // userAgent: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
+        // },
         primaryHardwareType: {
             type: DataTypes.STRING,
             allowNull: false,

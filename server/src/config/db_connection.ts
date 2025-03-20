@@ -11,7 +11,7 @@ const sequelize: Sequelize = new Sequelize(
         host: process.env.DB_HOST ?? "",
         port: Number.parseInt(process.env.DB_PORT + ""),
         dialect: "mysql",
-        // logging: true
+        logging: (...msg) => process.env.ENV !== "DEV" ? null : console.log(`SQL - ${msg}`)
     }
 );
 export default sequelize;
