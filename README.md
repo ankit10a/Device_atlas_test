@@ -13,14 +13,13 @@ A web application that collects device information using the DeviceAtlas API and
 ## Technologies
 
 - **Frontend**: Vite + React + TypeScript (Port 5013)
-- **Backend**: Node.js + Express + TypeScript (Port 3001)
+- **Backend**: Node.js + Express + TypeScript (Port 5012)
 - **Database**: MySQL (Port 3306)
 
 ## Prerequisites
 
 - Node.js (v18+)
 - npm (v9+)
-- DeviceAtlas license key
 
 ## Getting Started
 
