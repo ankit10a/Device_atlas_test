@@ -6,7 +6,8 @@ A web application that collects device information using the DeviceAtlas API and
 
 - Fetches device data from DeviceAtlas API
 - Stores normalized data in MySQL database
-- Frontend displays tablet devices sorted by OS version
+- Frontend displays devices details
+- In Frontent above table filters(Dropdown) are given for the seraching(Filtering) and sorting the table
 - Dockerized development environment
 - API endpoints for data management
 
