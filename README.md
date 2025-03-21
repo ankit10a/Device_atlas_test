@@ -55,7 +55,7 @@ docker-compose up
 docker-compose down 
 ```
 
-- to Clear cache
+- To clear docker cache
 
 ``` bash
 docker-compose down -v
