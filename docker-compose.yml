@@ -10,34 +10,37 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d
     ports:
-      - "3306:3306"
+      - "3307:3306"
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "--password=password"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
 
   backend:
     build:
-      context: ./backend  # Ensure it points to the backend folder
+      context: ./backend
       dockerfile: Dockerfile
+    command: ["./wait-for-it", "db:3306", "--", "npm", "start"]  # Correct place for command
+    # command: sh -c "/usr/local/bin/wait-for-it db:3306 -- npm run start"
     ports:
       - "5012:5012"
     depends_on:
       db:
-        condition: service_healthy  # Ensures db is ready before backend starts
+        condition: service_healthy
     environment:
       DB_HOST: db
       DB_NAME: deviceatlas
       DB_USER: user
       DB_PASSWORD: password
       DB_DIALECT: mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-u", "user", "--password=password"]
-      interval: 10s
-      retries: 5
-      start_period: 20s
 
   frontend:
     build:
-      context: ./frontend  # Ensure it points to the frontend folder
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "5013:80"
