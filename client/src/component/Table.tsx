@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import { Button } from 'react-bootstrap';
-import Form from 'react-bootstrap/esm/Form';
-import InputGroup from 'react-bootstrap/esm/InputGroup';
-import Table from 'react-bootstrap/Table';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Form, InputGroup, Table } from 'react-bootstrap';
+import apiInstanse from '../config/axiosConfig';
 
 interface Device {
     primaryHardwareType: string;
@@ -14,121 +12,143 @@ interface Device {
     browserRenderingEngine: string;
 }
 
-interface Props {
-    tableData: Device[];
+interface FilterParams {
+    filterColumn?: string;
+    filterValue?: string;
+    sortBy?: string;
+    orderBy?: string;
 }
 
-const TableComponent = ({ tableData }: Props) => {
-    const [filterColumn, setFilterColumn] = useState<string>("");
-    const [filterValue, setFilterValue] = useState<string>("");
-    const [sortBy, setSortedBy] = useState<string>('')
-    const [orderBy, setOrderBy] = useState<string>('')
+interface TableComponentProps {
+    tableData: Device[];
+    currentFilters: FilterParams;
+    onFilterChange: (filters: FilterParams) => void;
+}
 
-    // Get all column keys for the dropdown
-    const columns = [
-        { key: "primaryHardwareType", label: "Primary Hardware Type" },
-        { key: "osVersion", label: "OS Version" },
-        { key: "vendor", label: "Vendor" },
-        { key: "browserName", label: "Browser Name" },
-        { key: "model", label: "Model" },
-        { key: "osName", label: "OS Name" },
-        { key: "browserRenderingEngine", label: "Browser Rendering Engine" },
-    ];
+const COLUMNS = [
+    { key: "primaryHardwareType", label: "Primary Hardware Type" },
+    { key: "osVersion", label: "OS Version" },
+    { key: "vendor", label: "Vendor" },
+    { key: "browserName", label: "Browser Name" },
+    { key: "model", label: "Model" },
+    { key: "osName", label: "OS Name" },
+    { key: "browserRenderingEngine", label: "Browser Rendering Engine" },
+] as const;
 
-    // Filter table data based on selected column and value
-    const filteredData = tableData.filter((device) => {
-        if (!filterColumn || !filterValue) return true;
-        return device[filterColumn as keyof Device]
-            ?.toString()
-            .toLowerCase()
-            .includes(filterValue.toLowerCase());
-    });
+const TableComponent = ({ tableData, currentFilters, onFilterChange }: TableComponentProps) => {
+    const [filterValues, setFilterValues] = useState<string[]>([]);
+    const [cache, setCache] = useState<Record<string, string[]>>({});
 
-    const handleClick = () => {
-        console.log('click')
-    }
+    const handleFilterChange = useCallback((type: keyof FilterParams, value: string) => {
+        onFilterChange({ ...currentFilters, [type]: value });
+    }, [currentFilters, onFilterChange]);
 
-    const handleReset = () => {
-        console.log('handleReset')
-    }
+    const getFilterColumnData = useCallback(async () => {
+        const column = currentFilters.filterColumn;
+        if (!column || cache[column]) {
+            setFilterValues(column ? cache[column] || [] : []);
+            return;
+        }
+
+        try {
+            const { data } = await apiInstanse.get(`/get-device-column-data?params=${column}`);
+            if (data?.result) {
+                setCache(prev => ({ ...prev, [column]: data.result }));
+                setFilterValues(data.result);
+            }
+        } catch (error) {
+            console.error('Error fetching filter values:', error);
+            setFilterValues([]);
+        }
+    }, [currentFilters.filterColumn, cache]);
+
+    const handleReset = useCallback(() => {
+        onFilterChange({
+            filterColumn: undefined,
+            filterValue: undefined,
+            sortBy: undefined,
+            orderBy: undefined
+        });
+        setFilterValues([]);
+        setCache({});
+    }, [onFilterChange]);
+
+    useEffect(() => {
+        getFilterColumnData();
+    }, [getFilterColumnData]);
 
     return (
-        <div>
-            <InputGroup className="mb-3">
+        <div className="table-responsive">
+            <InputGroup className="mb-3 flex-wrap gap-2">
                 <Form.Select
-                    aria-label="Select filter column"
-                    value={filterColumn}
-                    onChange={(e) => setFilterColumn(e.target.value)}
+                    value={currentFilters.filterColumn || ''}
+                    onChange={(e) => handleFilterChange('filterColumn', e.target.value)}
                 >
                     <option value="" disabled>Filter by Column</option>
-                    {columns.map((col) => (
-                        <option key={col.key} value={col.key}>
-                            {col.label}
-                        </option>
+                    {COLUMNS.map(({ key, label }) => (
+                        <option key={key} value={key}>{label}</option>
                     ))}
                 </Form.Select>
 
-                <Form.Control
-                    type="text"
-                    placeholder="Enter filter value..."
-                    value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
-                    disabled={!filterColumn}
-                />
-
                 <Form.Select
-                    aria-label="Select filter column"
-                    value={sortBy}
-                    onChange={(e) => setFilterColumn(e.target.value)}
+                    value={currentFilters.filterValue || ''}
+                    onChange={(e) => handleFilterChange('filterValue', e.target.value)}
+                    disabled={!currentFilters.filterColumn}
                 >
-                    <option value="" disabled>SortBy Column</option>
-                    {columns.map((col) => (
-                        <option key={col.key} value={col.key}>
-                            {col.label}
-                        </option>
+                    <option value="" disabled>
+                        {filterValues.length ? 'Filter Value' : 'No options available'}
+                    </option>
+                    {filterValues.map(value => (
+                        <option key={value} value={value}>{value}</option>
                     ))}
                 </Form.Select>
+
                 <Form.Select
-                    aria-label="Select column"
-                    value={['ASC', 'DESC']}
-                    onChange={(e) => setFilterColumn(e.target.value)}
+                    value={currentFilters.sortBy || ''}
+                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                 >
-                    <option value="" disabled>Orderby Column</option>
-                    <option key='ASC' value={'ASC'} disabled={!sortBy}>ASC</option>
-                    <option key='DESC' value={'DESC'} disabled={!sortBy}>DESC</option>
+                    <option value="" disabled>Sort By</option>
+                    {COLUMNS.map(({ key, label }) => (
+                        <option key={key} value={key}>{label}</option>
+                    ))}
                 </Form.Select>
-                <Button variant='primary' onClick={handleClick}>Filter</Button>
-                <Button variant='danger' onClick={handleReset}>Reset</Button>
+
+                <Form.Select
+                    value={currentFilters.orderBy || ''}
+                    onChange={(e) => handleFilterChange('orderBy', e.target.value)}
+                    disabled={!currentFilters.sortBy}
+                >
+                    <option value="" disabled>Order</option>
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
+                </Form.Select>
+
+                <Button variant="danger" onClick={handleReset}>Reset</Button>
             </InputGroup>
 
-            {/* Table Display */}
-            <Table responsive="sm" striped bordered hover>
+            <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        {columns.map((col) => (
-                            <th key={col.key}>{col.label}</th>
+                        {COLUMNS.map(({ label }) => (
+                            <th key={label}>{label}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {tableData && tableData.length > 0 ? (
-                        tableData.map((ele, idx) => (
-                            <tr key={idx}>
-                                <td>{idx + 1}</td>
-                                <td>{ele.primaryHardwareType}</td>
-                                <td>{ele.osVersion}</td>
-                                <td>{ele.vendor}</td>
-                                <td>{ele.browserName}</td>
-                                <td>{ele.model}</td>
-                                <td>{ele.osName}</td>
-                                <td>{ele.browserRenderingEngine}</td>
+                    {tableData.length > 0 ? (
+                        tableData.map((device, index) => (
+                            <tr key={`${device.model}-${index}`}>
+                                <td>{index + 1}</td>
+                                {COLUMNS.map(({ key }) => (
+                                    <td key={key}>{device[key]}</td>
+                                ))}
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={8} className="text-center">
-                                No data available
+                            <td colSpan={COLUMNS.length + 1} className="text-center">
+                                No matching records found
                             </td>
                         </tr>
                     )}

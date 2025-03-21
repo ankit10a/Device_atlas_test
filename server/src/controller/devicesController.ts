@@ -1,14 +1,47 @@
 import { Request, Response } from "express";
 import devicesService from "../services/devicesService";
-import { ValidationError } from "sequelize";
+import { Order, ValidationError, WhereOptions } from "sequelize";
 
 export const getDevicesList = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const list = await devicesService.getDevice();
+        const { sortBy, orderBy, filterColumn, filterValue } = req.query;
+
+        const whereClause: WhereOptions = {};
+        if (filterColumn && filterValue) {
+            whereClause[filterColumn as string] = filterValue;
+        }
+
+        const orderClause: Order = [];
+        if (sortBy) {
+            orderClause.push([sortBy as string, orderBy?.toString() || 'ASC']);
+        }
+        const list = await devicesService.getDevice({ whereClause, orderClause });
         return res.status(200).json({ message: 'success', list })
 
     } catch (error) {
         return res.status(400).json({ message: "Some Internal Error Occurs" })
+    }
+}
+
+export const getDeviceAttributes = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const result = await devicesService.getColumnAttributes();
+        const columnData = Object.keys(result?.toJSON?.() || {})
+        return res.status(200).json({ columnData })
+    } catch (error) {
+        console.error(`Error in the getDeviceColumn Controller ${error}`);
+        return res.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
+export const getAttributesData = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const columnName: any = req.query.params;
+        const result = (await devicesService.getColumnDistinctValue(columnName)).map((ele: any) => ele[columnName])
+        return res.status(200).json({ result })
+    } catch (error) {
+        console.error(`Error in the getAttributesData Controller ${error}`);
+        return res.status(500).send({ message: "Internal Server Error" })
     }
 }
 
