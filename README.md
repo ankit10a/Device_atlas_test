@@ -42,9 +42,25 @@ DB_PASS=password
 DB_SYNC=SYNC # for syncing the table of database
 ```
 ### 3. Start the application
-```bash
-docker-compose down -v && docker-compose up -d --build
 
+- For start the container
+
+```bash
+docker-compose up 
+
+```
+- For stop the container
+
+```bash
+docker-compose down 
+```
+
+- to Clear cache
+
+``` bash
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up -d --build
 ```
 
 ### 4. Project sturcture.
