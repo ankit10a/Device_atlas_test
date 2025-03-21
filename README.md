@@ -29,7 +29,7 @@ A web application that collects device information using the DeviceAtlas API and
 git clone https://github.com/ankit10a/Device_atlas_test
 cd Device_atlas_test
 ```
-### 2. Set up the backend env
+### 2. Set up the backend env inside the backend folder
 ```bash
 PORT=5012 # port of the backend
 ENV=DEV  # env of the backend
