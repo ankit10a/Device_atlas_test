@@ -14,23 +14,33 @@ services:
       - "3306:3306"
     command: --default-authentication-plugin=mysql_native_password
 
-  server:
-    build: ./backend
+  backend:
+    build:
+      context: ./backend  # Ensure it points to the backend folder
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5012"
+    depends_on:
+      db:
+        condition: service_healthy  # Ensures db is ready before backend starts
     environment:
       DB_HOST: db
       DB_NAME: deviceatlas
-      DB_USER: root
+      DB_USER: user
       DB_PASSWORD: password
       DB_DIALECT: mysql
-    ports:
-      - "3001:3001"
-    depends_on:
-      - db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-u", "user", "--password=password"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
 
-  client:
-    build: ./frontend
+  frontend:
+    build:
+      context: ./frontend  # Ensure it points to the frontend folder
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "5013:80"
     depends_on:
       - backend
 
