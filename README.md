@@ -27,8 +27,9 @@ A web application that collects device information using the DeviceAtlas API and
 ```bash
 git clone https://github.com/ankit10a/Device_atlas_test
 cd Device_atlas_test
-
-
+```
+### 2. set up the backend env
+```bash
 PORT=5012 # port of the backend
 ENV=DEV  # env of the backend
 DB_PORT='3306'
@@ -37,3 +38,4 @@ DB_HOST=127.0.0.1
 DB_USER='user'
 DB_PASS=password
 DB_SYNC=SYNC # for syncing the table of database
+```
