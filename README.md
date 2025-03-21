@@ -47,7 +47,8 @@ docker-compose down -v && docker-compose up -d --build
 ```
 
 ### 4. Project sturcture.
-
+bash
+```
 .
 ├── frontend/          # Vite React app (port 5013)
 │   ├── src/
@@ -61,7 +62,7 @@ docker-compose down -v && docker-compose up -d --build
 │   ├── initdb.sql/
 ├── docker-compose.yml
 └── README.md
-
+```
 
 # 5. Environment
 - For development 
