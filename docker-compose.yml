@@ -34,7 +34,7 @@ services:
       DB_HOST: db
       DB_NAME: device_atlas
       DB_USER: user
-      DB_PASSWORD: password
+      DB_PASS: password
       DB_DIALECT: mysql
 
   frontend:
